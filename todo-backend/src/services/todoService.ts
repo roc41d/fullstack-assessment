@@ -72,3 +72,13 @@ export const deleteTodo = async (id: number): Promise<void> => {
     throw error;
   }
 };
+
+export const clearCompletedTodos = async (): Promise<{ count: number }> => {
+  const db = await getDb();
+
+  const { changes } = await db.run("DELETE FROM todos WHERE completed = ?", [
+    1,
+  ]);
+
+  return { count: changes };
+};
