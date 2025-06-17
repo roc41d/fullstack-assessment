@@ -7,4 +7,3 @@ export interface Todo {
 }
 
 export type CreateTodoDto = Pick<Todo, 'title'> & Partial<Pick<Todo, 'completed'>>;
-export type UpdateTodoDto = Partial<CreateTodoDto>;
