@@ -1,62 +1,149 @@
-import db from '../database/db';
-import { Todo } from '../types/todo';
+import { getDb } from "../database/connection";
+import { Todo, CreateTodoDto, UpdateTodoDto } from "../types/todo";
 
-export const getAllTodos = (): Todo[] => {
-    try {
-      return db.prepare('SELECT * FROM todos').all() as Todo[];
-    } catch (error) {
-      throw new Error(`Failed to fetch todos: ${getErrorMessage(error)}`);
+export const getAllTodos = async (): Promise<Todo[]> => {
+  try {
+    const db = await getDb();
+    return await db.all<Todo[]>("SELECT * FROM todos ORDER BY created_at DESC");
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch todos: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+};
+
+export const getTodoById = async (id: number): Promise<Todo | undefined> => {
+  try {
+    const db = await getDb();
+    return await db.get<Todo>("SELECT * FROM todos WHERE id = ?", id);
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch todo ${id}: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+};
+
+export const createTodo = async (newTodo: CreateTodoDto): Promise<Todo> => {
+  try {
+    const db = await getDb();
+
+    const { lastID } = await db.run(
+      "INSERT INTO todos (title, completed) VALUES (?, ?)",
+      [newTodo.title, newTodo.completed]
+    );
+
+    const todo = await getTodoById(lastID);
+    if (!todo) throw new Error("Failed to retrieve created todo");
+    return todo;
+  } catch (error) {
+    throw new Error(
+      `Failed to create todo: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+};
+
+export const updateTodo = async (
+  updateTodoDto: UpdateTodoDto
+): Promise<Todo> => {
+  try {
+    const db = await getDb();
+
+    const { changes } = await db.run(
+      `UPDATE todos 
+       SET title = ?,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [updateTodoDto.title, updateTodoDto.id]
+    );
+
+    if (changes === 0) {
+      throw new Error(`Todo with ID ${updateTodoDto.id} not found`);
     }
-  };
 
-  export const getTodoById = (id: number): Todo | null => {
-    try {
-      const row = db.prepare('SELECT * FROM todos WHERE id = ?').get(id);
-      return row as Todo ?? null;
-    } catch (error) {
-      throw new Error(`Failed to fetch todo ${id}: ${getErrorMessage(error)}`);
+    const updatedTodo = await db.get<Todo>(
+      "SELECT * FROM todos WHERE id = ?",
+      updateTodoDto.id
+    );
+
+    if (!updatedTodo) {
+      throw new Error("Failed to fetch updated todo");
     }
-  };
 
-export const createTodo = (title: string): Todo => {
-  try {
-    const stmt = db.prepare(`
-      INSERT INTO todos (title, completed, created_at, updated_at)
-      VALUES (?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    `);
-    const result = stmt.run(title);
-    return getTodoById(result.lastInsertRowid as number)!;
+    return updatedTodo;
   } catch (error) {
-    throw new Error(`Failed to create todo: ${getErrorMessage(error)}`);
+    throw new Error(
+      `Failed to update todo title: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 };
 
-export const updateTodo = (id: number, completed: boolean): Todo | null => {
+export const markTodoComplete = async (id: number): Promise<Todo> => {
   try {
-    const stmt = db.prepare(`
-      UPDATE todos SET completed = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
-    `);
-    const result = stmt.run(completed ? 1 : 0, id);
-    return result.changes ? getTodoById(id) : null;
+    const db = await getDb();
+
+    const { changes } = await db.run(
+      `UPDATE todos 
+       SET completed = 1, 
+           updated_at = CURRENT_TIMESTAMP 
+       WHERE id = ?`,
+      [id]
+    );
+
+    if (changes === 0) {
+      throw new Error(`Todo with ID ${id} not found`);
+    }
+
+    const updatedTodo = await db.get<Todo>("SELECT * FROM todos WHERE id = ?", [
+      id,
+    ]);
+
+    if (!updatedTodo) {
+      throw new Error("Failed to fetch updated todo");
+    }
+
+    return updatedTodo;
   } catch (error) {
-    throw new Error(`Failed to update todo ${id}: ${getErrorMessage(error)}`);
+    throw new Error(
+      `Failed to mark todo ${id} as complete: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 };
 
-export const deleteTodo = (id: number): boolean => {
+export const deleteTodo = async (id: number): Promise<void> => {
   try {
-    const stmt = db.prepare('DELETE FROM todos WHERE id = ?');
-    return stmt.run(id).changes > 0;
+    const db = await getDb();
+    const { changes } = await db.run("DELETE FROM todos WHERE id = ?", [id]);
+    if (changes === 0) throw new Error("Todo not found");
   } catch (error) {
-    throw new Error(`Failed to delete todo ${id}: ${getErrorMessage(error)}`);
+    throw new Error(
+      `Failed to delete todo ${id}: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 };
 
-export const clearCompletedTodos = (): void => {
+export const clearCompletedTodos = async (): Promise<{ count: number }> => {
   try {
-    db.prepare('DELETE FROM todos WHERE completed = 1').run();
+    const db = await getDb();
+    const { changes } = await db.run("DELETE FROM todos WHERE completed = 1");
+    return { count: changes };
   } catch (error) {
-    throw new Error(`Failed to clear completed todos: ${getErrorMessage(error)}`);
+    throw new Error(
+      `Failed to clear completed todos: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 };
 
