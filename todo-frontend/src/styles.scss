@@ -26,6 +26,10 @@
     --dark-very-dark-grayish-blue-2: hsl(237, 14%, 26%);
 }
 
+.relative {
+    position: unset !important;
+}
+
 .light {
     --bg-body: var(--light-very-light-gray);
     --bg-card: white;
@@ -61,6 +65,38 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.bg-image-mobile-light {
+    background-image: url('/assets/images/bg-mobile-light.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 200px;
+    width: 100%;
+}
+
+.bg-image-mobile-dark {
+    background-image: url('/assets/images/bg-mobile-dark.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 200px;
+    width: 100%;
+}
+
+.bg-image-desktop-light {
+    background-image: url('/assets/images/bg-desktop-light.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    width: 100%;
+}
+
+.bg-image-desktop-dark {
+    background-image: url('/assets/images/bg-desktop-dark.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    width: 100%;
 }
 
 .theme-background {

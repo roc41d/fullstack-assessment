@@ -1,1 +1,37 @@
-<p>todos works!</p>
+<div class="flex flex-col items-center min-h-screen relative overflow-hidden">
+    <div #themeBg id="theme-background" class="theme-background bg-cover bg-center absolute top-0 left-0 w-full z-[-1] transition-background-image duration-300"></div>
+  
+    <main class="todo-container mt-10 md:mt-20 px-4 w-full">
+      <app-header [theme]="theme$ | async" (toggleTheme)="toggleTheme()"></app-header>
+  
+      <app-todo-input (addTodo)="addTodo($event)"></app-todo-input>
+
+       <!-- Loading Spinner -->
+    <!-- <div *ngIf="isLoading$ | async" class="flex justify-center items-center py-4">
+        <div class="loader"></div>
+        <span class="ml-3 footer-text">Loading...</span>
+      </div> -->
+  
+      <div class="card rounded-lg overflow-hidden mb-6">
+        <app-todo-list
+          [todos]="filteredTodos$ | async"
+          (toggleComplete)="toggleComplete($event)"
+          (deleteTodo)="deleteTodo($event)"
+        ></app-todo-list>
+  
+        <app-todo-footer
+          [activeTodoCount]="activeTodoCount$ | async"
+          [currentFilter]="currentFilter$ | async"
+          (setFilter)="setFilter($event)"
+          (clearCompleted)="clearCompleted()"
+        ></app-todo-footer>
+      </div>
+  
+      <div class="card rounded-lg p-4 flex justify-center space-x-4 sm:hidden">
+        <app-filter-button [filter]="'all'" [currentFilter]="currentFilter$ | async" (setFilter)="setFilter($event)" [text]="'All'"></app-filter-button>
+        <app-filter-button [filter]="'active'" [currentFilter]="currentFilter$ | async" (setFilter)="setFilter($event)" [text]="'Active'"></app-filter-button>
+        <app-filter-button [filter]="'completed'" [currentFilter]="currentFilter$ | async" (setFilter)="setFilter($event)" [text]="'Completed'"></app-filter-button>
+      </div>
+  
+    </main>
+  </div>

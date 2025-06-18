@@ -3,12 +3,15 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Todo } from '../interface/todo.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoService {
-  private apiUrl = '/api/todos';
+//   private apiUrl = 'localhost:3000/api/todos/api/todos'; 
+//   private apiUrl = environment.apiUrl;
+private apiUrl = `${environment.apiUrl}/todos`;
 
   private _todos = new BehaviorSubject<Todo[]>([]);
   public readonly todos$: Observable<Todo[]> = this._todos.asObservable();
