@@ -1,0 +1,176 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom colors for CSS variables */
+:root {
+    --bright-blue: hsl(220, 98%, 61%);
+    --check-bg-start: hsl(192, 100%, 67%);
+    --check-bg-end: hsl(280, 87%, 65%);
+
+    /* Light Theme */
+    --light-very-light-gray: hsl(0, 0%, 98%);
+    --light-very-light-grayish-blue: hsl(236, 33%, 92%);
+    --light-grayish-blue: hsl(233, 11%, 84%);
+    --light-dark-grayish-blue: hsl(236, 9%, 61%);
+    --light-very-dark-grayish-blue: hsl(235, 19%, 35%);
+
+    /* Dark Theme */
+    --dark-very-dark-blue: hsl(235, 21%, 11%);
+    --dark-very-dark-desaturated-blue: hsl(235, 24%, 19%);
+    --dark-light-grayish-blue: hsl(234, 39%, 85%);
+    --dark-light-grayish-blue-hover: hsl(236, 33%, 92%);
+    --dark-dark-grayish-blue: hsl(234, 11%, 52%);
+    --dark-very-dark-grayish-blue-1: hsl(233, 14%, 35%);
+    --dark-very-dark-grayish-blue-2: hsl(237, 14%, 26%);
+}
+
+.light {
+    --bg-body: var(--light-very-light-gray);
+    --bg-card: white;
+    --text-primary: var(--light-very-dark-grayish-blue);
+    --text-secondary: var(--light-dark-grayish-blue);
+    --text-placeholder: var(--light-dark-grayish-blue);
+    --border-color: var(--light-very-light-grayish-blue);
+    --filter-text-active: var(--bright-blue);
+    --filter-text-hover: var(--light-very-dark-grayish-blue);
+    --input-bg: white;
+    --box-shadow: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+    --bg-body: var(--dark-very-dark-blue);
+    --bg-card: var(--dark-very-dark-desaturated-blue);
+    --text-primary: var(--dark-light-grayish-blue);
+    --text-secondary: var(--dark-dark-grayish-blue);
+    --text-placeholder: var(--dark-dark-grayish-blue);
+    --border-color: var(--dark-very-dark-grayish-blue-1);
+    --filter-text-active: var(--bright-blue);
+    --filter-text-hover: var(--dark-light-grayish-blue-hover);
+    --input-bg: var(--dark-very-dark-desaturated-blue);
+    --box-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body {
+    font-family: 'Josefin Sans', sans-serif;
+    background-color: var(--bg-body);
+    transition: background-color 0.3s ease;
+    font-size: 18px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.theme-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+}
+
+.todo-container {
+    width: 90%;
+    max-width: 540px; /* Desktop max width */
+    margin-top: -120px; /* Adjust based on background image height */
+    z-index: 10;
+}
+
+@media (min-width: 768px) {
+    .todo-container {
+        margin-top: -180px; /* Adjust for desktop background */
+    }
+}
+
+.card {
+    background-color: var(--bg-card);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 2rem var(--box-shadow);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    caret-color: var(--bright-blue);
+}
+
+.todo-item {
+    border-bottom: 1px solid var(--border-color);
+    transition: border-color 0.3s ease;
+}
+
+.checkbox-custom {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.3s ease;
+}
+
+.checkbox-custom.completed {
+    background: linear-gradient(to bottom right, var(--check-bg-start), var(--check-bg-end));
+    border: none;
+}
+
+.checkbox-custom:hover:not(.completed) {
+    border-color: var(--check-bg-start); /* Hover effect */
+}
+
+.todo-text {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.todo-text.completed {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+}
+
+.delete-btn {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.todo-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.filter-btn {
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+.filter-btn.active {
+    color: var(--filter-text-active);
+}
+
+.filter-btn:hover:not(.active) {
+    color: var(--filter-text-hover);
+}
+
+.footer-text {
+    color: var(--text-secondary);
+}
+
+.attribution {
+    margin-top: 50px;
+    font-size: 11px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+.attribution a {
+    color: var(--bright-blue);
+}
+
+/* Drag and Drop styles (simplified) */
+.todo-item.drag-over {
+  border-top: 2px solid var(--bright-blue); /* Visual indicator for drop target */
+}
