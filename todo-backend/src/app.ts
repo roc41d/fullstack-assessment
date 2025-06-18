@@ -3,9 +3,12 @@ import dotenv from "dotenv";
 import logger from "./utils/logger";
 import todoRoutes from "./routes/todoRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
